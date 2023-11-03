@@ -21,6 +21,12 @@ class _MessageScreenState extends State<MessageScreen> {
   late MQTTManager _manager;
 
   @override
+  void initState() {
+    super.initState();
+    _topicTextController.text = 'topic/motor';
+  }
+
+  @override
   void dispose() {
     _messageTextController.dispose();
     _topicTextController.dispose();
@@ -44,8 +50,9 @@ class _MessageScreenState extends State<MessageScreen> {
 
   Widget _buildAppBar(BuildContext context) {
     return AppBar(
-        title: const Text('MQTT'),
-        backgroundColor: Colors.greenAccent,
+        elevation: 0,
+        backgroundColor: Colors.amber[900],
+        title: const Text("Intelligent Speed Controller Motor"),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
@@ -75,14 +82,15 @@ class _MessageScreenState extends State<MessageScreen> {
 
   Widget _buildEditableColumn(MQTTAppState currentAppState) {
     return Padding(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
         children: <Widget>[
+          _buildScrollableTextWith(currentAppState.getHistoryText),
+          const SizedBox(height: 15),
           _buildTopicSubscribeRow(currentAppState),
           const SizedBox(height: 10),
           _buildPublishMessageRow(currentAppState),
           const SizedBox(height: 10),
-          _buildScrollableTextWith(currentAppState.getHistoryText)
         ],
       ),
     );
@@ -90,9 +98,10 @@ class _MessageScreenState extends State<MessageScreen> {
 
   Widget _buildPublishMessageRow(MQTTAppState currentAppState) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Expanded(
+        SizedBox(
+          width: 220,
           child: _buildTextFieldWith(_messageTextController, 'Enter a message',
               currentAppState.getAppConnectionState),
         ),
@@ -119,6 +128,9 @@ class _MessageScreenState extends State<MessageScreen> {
           contentPadding:
               const EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
           labelText: hintText,
+          labelStyle: TextStyle(color: Colors.black45),
+          focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.amber)),
         ));
   }
 
@@ -126,7 +138,9 @@ class _MessageScreenState extends State<MessageScreen> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.amber[900],
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
         disabledForegroundColor: Colors.black38.withOpacity(0.38),
         disabledBackgroundColor: Colors.black38.withOpacity(0.12),
         textStyle: TextStyle(color: Colors.white),
@@ -142,12 +156,13 @@ class _MessageScreenState extends State<MessageScreen> {
 
   Widget _buildTopicSubscribeRow(MQTTAppState currentAppState) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Expanded(
+        SizedBox(
+          width: 220,
           child: _buildTextFieldWith(
               _topicTextController,
-              'Enter a topic to subscribe or listen',
+              'Enter a topic to subscribe',
               currentAppState.getAppConnectionState),
         ),
         _buildSubscribeButtonFrom(currentAppState.getAppConnectionState)
@@ -159,9 +174,11 @@ class _MessageScreenState extends State<MessageScreen> {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.amber[900],
           disabledForegroundColor: Colors.grey,
           disabledBackgroundColor: Colors.black38.withOpacity(0.12),
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
         ),
         onPressed: (state == MQTTAppConnectionState.connectedSubscribed) ||
                 (state == MQTTAppConnectionState.connectedUnSubscribed) ||
@@ -176,20 +193,20 @@ class _MessageScreenState extends State<MessageScreen> {
   }
 
   Widget _buildScrollableTextWith(String text) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Container(
-        padding: const EdgeInsets.only(left: 10.0, right: 5.0),
-        width: 400,
-        height: 100,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.black12,
-        ),
-        child: SingleChildScrollView(
-          controller: _controller,
-          child: Text(text),
-        ),
+    return Container(
+      padding: const EdgeInsets.only(
+        left: 15.0,
+        right: 5.0,
+      ),
+      width: double.infinity,
+      height: 130,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(7),
+        color: Colors.black12,
+      ),
+      child: SingleChildScrollView(
+        controller: _controller,
+        child: Text(text, style: TextStyle(fontSize: 13),),
       ),
     );
   }
@@ -208,11 +225,11 @@ class _MessageScreenState extends State<MessageScreen> {
   }
 
   void _publishMessage(String text) {
-    String osPrefix = 'Flutter_iOS';
+    String osPrefix = 'Mobile';
     if (Platform.isAndroid) {
-      osPrefix = 'Flutter_Android';
+      osPrefix = 'Mobile';
     }
-    final String message = osPrefix + ' says: ' + text;
+    final String message = osPrefix + ' : ' + text;
     _manager.publish(message);
     _messageTextController.clear();
   }

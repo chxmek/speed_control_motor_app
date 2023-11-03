@@ -17,6 +17,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late MQTTManager _manager;
 
   @override
+  void initState() {
+    super.initState();
+    _hostTextController.text = 'broker.emqx.io';
+  }
+
+  @override
   void dispose() {
     _hostTextController.dispose();
     super.dispose();
@@ -34,8 +40,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildAppBar(BuildContext context) {
     return AppBar(
-      title: const Text('Settings'),
-      backgroundColor: Colors.greenAccent,
+      elevation: 0,
+      backgroundColor: Colors.amber[900],
+      title: const Text("Setting"),
     );
   }
 
@@ -80,6 +87,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           contentPadding:
               const EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
           labelText: hintText,
+          labelStyle: TextStyle(color: Colors.black45),
+          focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.amber)),
         ));
   }
 
@@ -88,8 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: <Widget>[
         Expanded(
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlueAccent),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber[900], elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),),
             child: const Text('Connect'),
             onPressed: state == MQTTAppConnectionState.disconnected
                 ? _configureAndConnect
@@ -99,7 +108,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         const SizedBox(width: 10),
         Expanded(
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber[900], elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),),
             child: const Text('Disconnect'),
             onPressed: state != MQTTAppConnectionState.disconnected
                 ? _disconnect
